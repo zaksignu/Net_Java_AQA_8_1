@@ -4,7 +4,8 @@ package ru.netology.test;
 
 
 import lombok.SneakyThrows;
-        import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.netology.pages.DashBoardPage;
 import ru.netology.pages.LoginPage;
@@ -14,28 +15,36 @@ import static com.codeborne.selenide.Selenide.open;
 
 public class AppTest {
 
-    private static DataWizard.FellowOne ghostOne = DataWizard.Registr.generateUser();
+    @BeforeAll
+    static public void setUp() {
+        DataWizard.tailsCleaning();
 
-    @BeforeEach
-    @SneakyThrows
-    public void setUp() {
+    }
+
+    @Test
+    void happyPath() {
+        DataWizard.FellowOne ghostOne = DataWizard.Registr.generateUser();
         DataWizard.userRegister(ghostOne);
-        DataWizard.makeMeClean();
-
         open("http://localhost:9999");
         var loginPage = new LoginPage();
         var authInfo = DataWizard.getAuthInfo(ghostOne);
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataWizard.getVerificationCodeFor(ghostOne);
         verificationPage.validVerify(verificationCode);
-        }
-
-
-    @Test
-    @SneakyThrows
-    void happyPath() {
         var dashBoard = new DashBoardPage();
     }
 
+    @Test
+    void shouldBlockAfterThreeTimeWrong() {
+        DataWizard.FellowOne ghostOne = DataWizard.Registr.generateUser();
+        DataWizard.userRegister(ghostOne);
+        open("http://localhost:9999");
+        var loginPage = new LoginPage();
+        var authInfoCorrect = DataWizard.getAuthInfo(ghostOne);
+        loginPage.invalidLogin(authInfoCorrect);
+        loginPage.invalidLogin(authInfoCorrect);
+        loginPage.invalidLogin(authInfoCorrect);
+        loginPage.validLogin(authInfoCorrect);
+    }
 
 }

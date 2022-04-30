@@ -1,5 +1,6 @@
 package ru.netology.web;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
 import com.github.javafaker.Faker;
 import lombok.SneakyThrows;
 import lombok.Value;
@@ -9,7 +10,8 @@ import java.sql.DriverManager;
 import java.util.Locale;
 
 public class DataWizard {
-    private DataWizard() {}
+    private DataWizard() {
+    }
 
     static Faker ghostOne = new Faker(new Locale("EN"));
 
@@ -26,10 +28,12 @@ public class DataWizard {
     public static AuthInfo getAuthInfo(FellowOne name) {
         return new AuthInfo(name.getLogin(), name.getHumanPass());
     }
+
     @Value
     public static class VerificationCode {
         private String code;
     }
+
     @SneakyThrows
     public static VerificationCode getVerificationCodeFor(FellowOne user) {
 
@@ -40,7 +44,7 @@ public class DataWizard {
                 var cleanUp = conn.createStatement();
         ) {
 
-            try (var rs = cleanUp.executeQuery( "SELECT code from auth_codes WHERE user_id = '"+user.getId()+"';")) {
+            try (var rs = cleanUp.executeQuery("SELECT code from auth_codes WHERE user_id = '" + user.getId() + "';")) {
                 if (rs.next()) {
                     return new VerificationCode(rs.getString(1));
                 }
@@ -54,6 +58,17 @@ public class DataWizard {
         return ghostOne.regexify("[a-z1-9]{10}");
     }
 
+    public static String generateLogin() {
+        return (ghostOne.aviation().aircraft() + "." + ghostOne.ancient().hero());
+    }
+
+    public static String generateHumanPass() {
+        return ghostOne.regexify("[a-z1-9]{10}");
+    }
+
+    public static String generateBCryptPass(String humanPass) {
+        return BCrypt.withDefaults().hashToString(10, humanPass.toCharArray());
+    }
 
     @SneakyThrows
     public static void userRegister(FellowOne user) {
@@ -72,13 +87,10 @@ public class DataWizard {
                     "'active')");
         }
 
-        //////   123qwerty - $2a$10$vPoHmy/Ku3r0h7WARVkP7eq0RddHgCJRoVmP74hbWpWqWyOAxWOqy
-        //////   qwerty123 - $10$Wa3kd.Xw3dR7nFpv4Gjz7ev2PebLT.x9b/7amn.mV5.VsPxZbi3fC
-
     }
 
     @SneakyThrows
-    public static void makeMeClean() {
+    public static void tailsCleaning() {
         var baseCleanFirstId = "SELECT id FROM app.users WHERE login='vasya';";
         var baseCleanSecondId = "SELECT id FROM app.users WHERE login='petya';";
         try (
@@ -99,12 +111,13 @@ public class DataWizard {
                     secondId = rs.getString(1);
                 }
             }
-            if (firstId!=null) {
+            if (firstId != null) {
                 cleanUp.execute("DELETE FROM app.cards where user_id='" + firstId + "';");
                 cleanUp.execute("DELETE FROM app.users where id='" + firstId + "';");
 
-            };
-            if (secondId!=null) {
+            }
+            ;
+            if (secondId != null) {
                 cleanUp.execute("DELETE FROM app.cards where user_id='" + secondId + "';");
                 cleanUp.execute("DELETE FROM app.users where id='" + secondId + "';");
             }
@@ -113,17 +126,17 @@ public class DataWizard {
     }
 
 
-
-    public static class Registr{
+    public static class Registr {
         private Registr() {
         }
 
         public static FellowOne generateUser() {
+            String humanPass;
             FellowOne user = new FellowOne(
                     generateIt(),
-                    generateIt(),
-                    "$2a$10$vPoHmy/Ku3r0h7WARVkP7eq0RddHgCJRoVmP74hbWpWqWyOAxWOqy",
-                    "123qwerty");
+                    generateLogin(),
+                    humanPass = generateHumanPass(),
+                    generateBCryptPass(humanPass));
             return user;
         }
     }
@@ -132,8 +145,8 @@ public class DataWizard {
     public static class FellowOne {
         private String id;
         private String login;
-        private String BcCryptPass;
         private String HumanPass;
+        private String BcCryptPass;
     }
 }
 
