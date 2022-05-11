@@ -44,7 +44,9 @@ public class AppTest {
         loginPage.invalidLogin(authInfoCorrect);
         loginPage.invalidLogin(authInfoCorrect);
         loginPage.invalidLogin(authInfoCorrect);
+        loginPage.invalidLogin(authInfoCorrect);
         loginPage.validLogin(authInfoCorrect);
+
     }
 
 }
