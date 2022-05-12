@@ -16,21 +16,21 @@ public class LoginPage {
     private SelenideElement loginButton = $("[data-test-id=action-login]");
     private SelenideElement errorBubble = $("[data-test-id=error-notification] .notification__title");
 
+    private void changeTxtInTheField(SelenideElement field, String text){
+        field.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
+        field.setValue(text);
+    }
 
     public VerificationPage validLogin(DataWizard.AuthInfo info) {
-        loginField.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
-        loginField.setValue(info.getLogin());
-        passwordField.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
-        passwordField.setValue(info.getPassword());
+        changeTxtInTheField(loginField, info.getLogin());
+        changeTxtInTheField(passwordField, info.getPassword());
         loginButton.click();
         return new VerificationPage();
     }
 
     public void invalidLogin(DataWizard.AuthInfo correctAuth) {
-        loginField.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
-        loginField.setValue(correctAuth.getLogin());
-        passwordField.sendKeys(Keys.CONTROL + "a", Keys.BACK_SPACE);
-        passwordField.setValue("1");
+        changeTxtInTheField(loginField, correctAuth.getLogin());
+        changeTxtInTheField(passwordField, correctAuth.getInvalidPassword());
         loginButton.click();
         errorBubble.shouldHave(Condition.text("Ошибка"), Duration.ofSeconds(4));
     }

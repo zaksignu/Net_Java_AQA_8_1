@@ -23,10 +23,12 @@ public class DataWizard {
     public static class AuthInfo {
         private String login;
         private String password;
+        private String invalidLogin;
+        private String invalidPassword;
     }
 
     public static AuthInfo getAuthInfo(FellowOne name) {
-        return new AuthInfo(name.getLogin(), name.getHumanPass());
+        return new AuthInfo(name.getLogin(), name.getHumanPass(), name.getLogin()+name.getLogin(), name.getHumanPass()+name.getHumanPass());
     }
 
     @Value

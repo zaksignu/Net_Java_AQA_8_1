@@ -31,7 +31,6 @@ public class AppTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataWizard.getVerificationCodeFor(ghostOne);
         verificationPage.validVerify(verificationCode);
-        var dashBoard = new DashBoardPage();
     }
 
     @Test
@@ -46,7 +45,6 @@ public class AppTest {
         loginPage.invalidLogin(authInfoCorrect);
         loginPage.invalidLogin(authInfoCorrect);
         loginPage.validLogin(authInfoCorrect);
-
     }
 
 }
