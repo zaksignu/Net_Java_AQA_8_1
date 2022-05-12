@@ -1,9 +1,10 @@
 package ru.netology.test;
 
-import org.junit.jupiter.api.BeforeAll;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import ru.netology.pages.DashBoardPage;
+
 import ru.netology.pages.LoginPage;
 import ru.netology.web.DataWizard;
 
@@ -29,6 +30,20 @@ public class AppTest {
         verificationPage.validVerify(verificationCode);
     }
 
-
+    @Test
+    void shouldBlockAfterThreeTimeWrong() {
+        DataWizard.FellowOne ghostOne = DataWizard.Registr.generateUser();
+        DataWizard.userRegister(ghostOne);
+        open("http://localhost:9999");
+        var loginPage = new LoginPage();
+        var authInfoCorrect = DataWizard.getAuthInfo(ghostOne);
+        loginPage.invalidLogin(authInfoCorrect);
+        loginPage.invalidLogin(authInfoCorrect);
+        loginPage.invalidLogin(authInfoCorrect);
+        loginPage.invalidLogin(authInfoCorrect);
+        String actual = DataWizard.blockingStatus(ghostOne);
+        String expected = "blocked";
+        Assertions.assertEquals(expected, actual);
+    }
 
 }

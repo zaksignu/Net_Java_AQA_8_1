@@ -28,7 +28,7 @@ public class DataWizard {
     }
 
     public static AuthInfo getAuthInfo(FellowOne name) {
-        return new AuthInfo(name.getLogin(), name.getHumanPass(), name.getLogin()+name.getLogin(), name.getHumanPass()+name.getHumanPass());
+        return new AuthInfo(name.getLogin(), name.getHumanPass(), name.getLogin() + name.getLogin(), name.getHumanPass() + name.getHumanPass());
     }
 
     @Value
@@ -90,6 +90,28 @@ public class DataWizard {
         }
 
     }
+
+    @SneakyThrows
+    public static String blockingStatus(FellowOne user) {
+        var baseCleanFirstId = "SELECT status FROM app.users WHERE login='"+user.getLogin()+"';";
+
+        try (
+                var conn = DriverManager.getConnection(
+                        "jdbc:mysql://localhost:3306/app", "app", "pass"
+                );
+                var blockStatus = conn.createStatement();
+        ) {
+            try (var rs = blockStatus.executeQuery(baseCleanFirstId)) {
+                if (rs.next()) {
+                    String status = rs.getString(1);
+                    return status;
+                }
+            }
+        }
+        return "0";
+    }
+
+
 
     @SneakyThrows
     public static void tailsCleaning() {
