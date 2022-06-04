@@ -22,17 +22,21 @@ public class LoginPage {
     }
 
     public VerificationPage validLogin(DataWizard.AuthInfo info) {
-        changeTxtInTheField(loginField, info.getLogin());
-        changeTxtInTheField(passwordField, info.getPassword());
+        changeMe( info.getLogin(),info.getPassword());
         loginButton.click();
         return new VerificationPage();
     }
 
     public void invalidLogin(DataWizard.AuthInfo correctAuth) {
-        changeTxtInTheField(loginField, correctAuth.getLogin());
-        changeTxtInTheField(passwordField, correctAuth.getInvalidPassword());
+        changeMe( correctAuth.getLogin(),correctAuth.getInvalidPassword());
         loginButton.click();
         errorBubble.shouldHave(Condition.text("Ошибка"), Duration.ofSeconds(4));
     }
+
+    private void changeMe(String login, String password) {
+        changeTxtInTheField(loginField, login);
+        changeTxtInTheField(passwordField, password);
+    }
+
 
 }
